@@ -1,0 +1,23 @@
+﻿@inject IStringLocalizer<Resources> Localizer
+<IPSNavMenu>
+    <AuthorizeView Roles="Administrator">
+        <IPSNavMenuLink Link="/" IconClass="fa-solid fa-house">@Localizer["Domov"]</IPSNavMenuLink>
+        <IPSNavMenuLink Link="/checkout" IconClass="fa-solid fa-cart-shopping">Izposoje</IPSNavMenuLink>
+        @*<IPSNavMenuLink Link="/user" IconClass="fa-solid fa-user">Uporabniki</IPSNavMenuLink>*@
+        <hr />
+        <IPSNavMenuLink Link="/author" IconClass="fa-solid fa-user">Avtorji</IPSNavMenuLink>
+        <IPSNavMenuLink Link="/category" IconClass="fa-solid fa-hashtag">Kategorije</IPSNavMenuLink>
+        <IPSNavMenuLink Link="/book" IconClass="fa-solid fa-book">Knjige</IPSNavMenuLink>
+        <IPSNavMenuLink Link="/publisher" IconClass="fa-solid fa-building-user">Založba</IPSNavMenuLink>
+        <IPSNavMenuLink Link="/userslist" IconClass="fa-solid fa-users">Člani</IPSNavMenuLink>
+    </AuthorizeView>
+    <AuthorizeView Roles="Member">
+        <IPSNavMenuLink Link="/" IconClass="fa-solid fa-house">@Localizer["Domov"]</IPSNavMenuLink>
+@*        <IPSNavMenuLink Link="/moje-izposoje" IconClass="fa-solid fa-cart-shopping">@Localizer["Moje izposoje"]</IPSNavMenuLink>
+*@        <IPSNavMenuLink Link="/checkout" IconClass="fa-solid fa-cart-shopping">Izposoje</IPSNavMenuLink>
+        <hr />
+        <IPSNavMenuLink Link="/book" IconClass="fa-solid fa-book">Knjige</IPSNavMenuLink>
+
+        @*<IPSNavMenuLink Link="/profile" IconClass="fa-solid fa-user">Moj profil</IPSNavMenuLink>*@
+    </AuthorizeView>
+</IPSNavMenu>

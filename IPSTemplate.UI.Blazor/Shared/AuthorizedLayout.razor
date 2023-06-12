@@ -1,0 +1,15 @@
+﻿@inherits LayoutComponentBase
+@layout MainLayout
+
+<AuthorizeView>
+    <Authorizing>
+        <IPSLoader Color=Color.Primary Size=LoaderSize.Large />
+        Checking your authentication status...
+    </Authorizing>
+    <Authorized>
+        @Body
+    </Authorized>
+    <NotAuthorized>
+        Access denied
+    </NotAuthorized>
+</AuthorizeView>

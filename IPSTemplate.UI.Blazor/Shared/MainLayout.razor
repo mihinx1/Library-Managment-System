@@ -1,0 +1,72 @@
+﻿@using IPSBlazor.Components
+@using IPSBlazor.Layouts
+@using IPSTemplate.UI.Blazor.Helpers
+@using IPSTemplate.UI.Blazor.Shared.Navigation
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Localization
+@using Blazored.LocalStorage
+
+@inherits LayoutComponentBase
+@layout IPSBlazorLayout
+@inject IStringLocalizer<Resources> Localizer
+@inject ILocalStorageService LocalStorage
+@inject LayoutService LayoutService
+@inject BreakpointService BreakpointService
+
+<IPSEnvironmentBadge />
+<IPSNavigationDrawerLayout DrawerMinimized=HandleDrawerToggled>
+    <LogoSmall>
+        <img src="_content/IPSTemplate.UI.Blazor/images/IPS-Pro-Logo-Leaf.png" class="w-100 h-auto" />
+    </LogoSmall>
+    <Logo>
+        <img src="_content/IPSTemplate.UI.Blazor/images/IPS-Pro-Logo-Leaf.png" class="w-100 h-auto" />
+    </Logo>
+    <Title>
+        <span class="app-title">@Localizer["Knjižnica"]</span>
+        <span class="app-subtitle">@Localizer["Platform d.o.o."]</span>   
+    </Title>
+    <SidebarContent>
+        <MainMenu />
+    </SidebarContent>
+        <SidebarFooter>
+        <IPSMediaView>
+            <XSmall></XSmall>
+            <Default>
+                <UserMenu />
+            </Default>
+        </IPSMediaView>
+    </SidebarFooter>
+    <SidebarFooterSmall>
+        <IPSAvatar IconClass="fa-solid fa-circle-user" />
+    </SidebarFooterSmall>
+    <AppBarActions>
+        <UserMenu />
+    </AppBarActions>
+    <Body>
+        @Body
+    </Body>
+</IPSNavigationDrawerLayout>
+<NavBar />
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        LayoutService.ConfigureDefaultOptions(new()
+        {
+            DrawerMinimized = await LocalStorage.GetItemAsync<bool>(Constants.LocalStorageKeys.DrawerMinimized)
+        });
+        await base.OnInitializedAsync();
+    }
+
+    private void HandleDrawerToggled(bool minimized)
+    {
+        if (!BreakpointService.IsXSmall)
+        {
+            LayoutService.ConfigureDefaultOptions(new()
+            {
+                DrawerMinimized = minimized
+            });
+            LocalStorage.SetItemAsync(Constants.LocalStorageKeys.DrawerMinimized, minimized);
+        }
+    }
+}

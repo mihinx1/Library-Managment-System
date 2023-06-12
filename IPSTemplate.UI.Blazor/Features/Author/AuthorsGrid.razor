@@ -1,0 +1,37 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.Author
+
+@using Core.Library.Base
+@using Csla.Core
+@using IPSTemplate.BusinessLibrary.BO.Author
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@using IPSTemplate.BusinessLibrary.StandardCollections
+@using IPSTemplate.Dal.Models
+@using Telerik.DataSource
+
+
+@inherits GridView<AuthorsGrid,
+                   TEAuthorInfo,
+                   TEAuthorGridInfo,
+                   TEAuthorRL,
+                   TEAuthor>
+
+<IPSGrid Id="AuthorsGrid" ShowHeader=true
+         OnRead=ReadData TItem=TEAuthorInfo
+         Context="author" @ref=_ref
+         OnStateInit="@((GridStateEventArgs<TEAuthorInfo> args) => OnStateInitHandler(args))">
+    <GridColumns>
+        <IPSGridColumn Id="Id" Field=@nameof(TEAuthorInfo.Id) Visible=false />
+        <IPSGridColumn Id="FirstName" Field=@nameof(TEAuthorInfo.FirstName) />
+        <IPSGridColumn Id="LastName" Field=@nameof(TEAuthorInfo.LastName) />
+        <IPSGridColumn Id="BirthDate" Field=@nameof(TEAuthorInfo.BirthYear) />
+        <IPSGridColumn Id="Nationality" Field=@nameof(TEAuthorInfo.Nationality) />
+
+        <AuthorizeView Roles="Administrator">
+            <IPSGridCommandColumn Context="contextAuthor">
+                <IPSButton OnClick=@(() => EditClicked.InvokeAsync((TEAuthorInfo)contextAuthor)) Icon=Icon.Pencil />
+            </IPSGridCommandColumn>
+
+        </AuthorizeView>
+    </GridColumns>
+</IPSGrid>

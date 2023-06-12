@@ -1,0 +1,55 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.Publisher
+@page "/publisher"
+@attribute [Authorize(Roles = TEUserRole.Administrator)]
+@using IPSTemplate.BusinessLibrary.BO.Publisher;
+
+<IPSPageTop Title="Založba">
+    <ActionsContent>
+        <IPSButton Color="Color.Dark" OnClick=@(()=>OpenEditView(null))>
+            Dodaj Založbo
+            <IPSBadge Type="BadgeType.Bubble" Color="Color.Primary"><i class="fa-solid fa-plus" /></IPSBadge>
+            </IPSButton>
+    </ActionsContent>
+</IPSPageTop>
+
+<PublishersGrid EditClicked=OpenEditView @ref=_grid />
+
+<IPSWindow Title=@_editViewTitle
+           Size="WindowSize.Large"
+           ConfirmCloseWhen=@(()=>_editView.ViewModel.Model.IsDirty)
+@bind-Visible=@windowVisible>
+    <WindowContent>
+        <PublisherEdit ItemId=@_selectedItemId ItemSaved=CloseEditView @ref=_editView />
+    </WindowContent>
+</IPSWindow>
+
+@code {
+    string? _selectedItemId;
+    string? _editViewTitle;
+    bool windowVisible;
+    PublishersGrid _grid = default!;
+    PublisherEdit _editView = default!;
+    private PublisherEdit _publisherEdit = default!;
+
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    protected void OpenEditView(TEPublisherInfo? selectedItem)
+    {
+        if (selectedItem is null)
+        {
+            _editViewTitle = "Dodaj novo založbo";
+            _selectedItemId = null;
+        }
+        else
+        {
+            _editViewTitle = $"Uredi založbo - {selectedItem.Name}";
+            _selectedItemId = selectedItem.Id.ToString();
+        }
+        windowVisible = true;
+    }
+    private void CloseEditView()
+    {
+        windowVisible = false;
+        _selectedItemId = null;
+        _grid.Rebind();
+    }
+}

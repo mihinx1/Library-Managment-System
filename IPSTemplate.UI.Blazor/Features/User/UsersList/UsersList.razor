@@ -1,0 +1,25 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.User
+@page "/userslist"
+@using IPSTemplate.BusinessLibrary.BO.Identity.User;
+
+<IPSPageTop Title="Člani"/>
+
+<UsersListGrid EditClicked=OpenEditView @ref=_grid />
+
+
+
+@code {
+    string? _selectedItemId;
+    string? _selectedUserId;
+    string? _editViewTitle;
+    bool windowVisible;
+    UsersListGrid _grid = default!;
+
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+
+    protected void OpenEditView(TEUserInfo? selectedUser)
+    {
+        windowVisible = true;
+    }
+
+}

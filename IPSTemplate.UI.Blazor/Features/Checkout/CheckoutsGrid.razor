@@ -1,0 +1,78 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.Checkout
+
+@using Core.Library.Base
+@using Csla.Core
+@using IPSTemplate.BusinessLibrary.BO.BookCopy;
+@using IPSTemplate.BusinessLibrary.BO.Checkout
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@using IPSTemplate.BusinessLibrary.StandardCollections
+@using IPSTemplate.Dal.Models
+@using Telerik.DataSource
+@using IPSTemplate.UI.Blazor.Features.BookCopy
+@using IPSBlazor.Services
+
+
+@inherits GridView<CheckoutsGrid,
+                   TECheckoutInfo,
+                   TECheckoutGridInfo,
+                   TECheckoutRL,
+                   TECheckout>
+
+
+
+<IPSGrid Id="CheckoutGrid" ShowHeader=true
+         OnRead=ReadData TItem=TECheckoutInfo
+         Context="book" EnableLoaderContainer=true @ref=_ref
+         OnStateInit="@((GridStateEventArgs<TECheckoutInfo> args) => OnStateInitHandler(args))">
+    <GridColumns>
+
+        <IPSGridColumn Id="Id" Field=@nameof(TECheckoutInfo.Id) Visible=false />
+
+        <IPSGridColumn Id="Status" Field=@nameof(TECheckoutInfo.IsAccordingToPlannedDate) Width="70px">
+            <Template>
+                @{
+                    var bookcopy = (TECheckoutInfo)context;
+                    if (bookcopy.IsReturned)
+                    {
+                        <IPSBadge Rounded Color="Color.Secondary">Vrnjeno</IPSBadge>
+                    }
+                    else if (bookcopy.IsAccordingToPlannedDate)
+                    {
+                        <IPSBadge Rounded Color="Color.Success">OK</IPSBadge>
+                    }
+                    else
+                    {
+                        <IPSBadge Rounded Color="Color.Danger">Zamuda</IPSBadge>
+                    }
+                }
+            </Template>
+        </IPSGridColumn>
+        <IPSGridColumn Id="UserID" Field=@nameof(TECheckoutInfo.UserShowAs) />
+        <IPSGridColumn Id="BookCopyTitle" Field=@nameof(TECheckoutInfo.BookCopyBookTitle) />
+        <IPSGridColumn Id="RemainingDays" Field=@nameof(TECheckoutInfo.RemainingDays)/>
+        <IPSGridColumn Id="StartDate" Field=@nameof(TECheckoutInfo.DateCreated)>
+            <Template>
+                @{
+                    var bookcopy = (TECheckoutInfo)context;
+                    //@bookcopy.DateCreated.ToShortDateString();
+                    @bookcopy.DateCreated.ToString("dd.MM.yyyy")
+                }
+            </Template>
+        </IPSGridColumn>
+
+        <IPSGridColumn Id="PlanedDate" Field=@nameof(TECheckoutInfo.PlanedDate) >
+            <Template>
+                @{
+                    var bookcopy = (TECheckoutInfo)context;
+                    @bookcopy.PlanedDate!.Value.ToString("dd.MM.yyyy")
+                }
+            </Template>
+        </IPSGridColumn>
+
+        <IPSGridCommandColumn>
+            <IPSButton Disabled=((TECheckoutInfo)context).IsReturned Title="Vrni knjigo"
+                       OnClick="@(() => { bookReturnedNotification((TECheckoutInfo)context); BookReturned.InvokeAsync((TECheckoutInfo)context); })" Icon=Icon.XMark/>
+        </IPSGridCommandColumn>
+    </GridColumns>
+</IPSGrid>

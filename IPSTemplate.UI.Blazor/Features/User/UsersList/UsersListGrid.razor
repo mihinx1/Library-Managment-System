@@ -1,0 +1,35 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.User
+
+@using Core.DAL.Infrastructure;
+@using Core.Library.Base
+@using Csla.Core
+@using IPSTemplate.BusinessLibrary.BO.Identity.User
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@using IPSTemplate.BusinessLibrary.StandardCollections
+@using IPSTemplate.Dal.Models.Identity
+@using Telerik.DataSource
+
+
+@inherits GridView<UsersListGrid,
+                   TEUserInfo,
+                   TEUserGridInfo,
+                   TEUserRL,
+                   Entity>
+
+<IPSGrid Id="UsersListGrid" ShowHeader=true
+         OnRead=ReadData TItem=TEUserInfo
+         Context="UsersList" @ref=_ref
+         OnStateInit="@((GridStateEventArgs<TEUserInfo> args) => OnStateInitHandler(args))">
+    <GridColumns>
+        <IPSGridColumn Id="Id" Field=@nameof(TEUserInfo.Id) Visible=false />
+        <IPSGridColumn Id="DisplayNameLong" Field=@nameof(TEUserInfo.DisplayName) Title="Puno ime" />
+        <IPSGridColumn Id="Username" Field=@nameof(TEUserInfo.Username) Title="Email" />
+@*        <IPSGridColumn Id="Email" Field=@nameof(TEUserInfo.Email) Title="Email" />
+*@        
+        <IPSGridColumn Id="PhoneNumber" Field=@nameof(TEUserInfo.PhoneNumber) Title="Tel.Številka" />
+        <IPSGridCommandColumn>
+@*            <IPSButton OnClick=@(() => EditClicked.InvokeAsync((TEUserInfo)context)) Icon=Icon.Pencil />
+*@        </IPSGridCommandColumn>
+    </GridColumns>
+</IPSGrid>

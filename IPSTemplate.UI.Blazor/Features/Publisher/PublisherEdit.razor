@@ -1,0 +1,45 @@
+﻿@page "/publisher/edit/{ItemId?}"
+
+@using BusinessLibrary.BO.Publisher
+@using Dal.Models
+
+@inherits EditView<TEPublisherBO, TEPublisher>
+
+@if (ViewModel?.Model is null)
+{
+    <IPSLoader />
+    return;
+}
+
+@if (Error is not null)
+{
+    @Error
+    return;
+}
+
+<IPSForm Model=ViewModel OnSaved=@(() => ItemSaved.InvokeAsync())>
+    <FormFields>
+        <IPSRow>
+            <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.Name) />
+        </IPSRow>
+        <IPSRow>
+            <IPSColumn ColumnWidth="8">
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.Email) />
+            </IPSColumn>
+            <IPSColumn>
+                <IPSDropDownList Data=@TEPostName.OrderedUserFriendlyNameMap
+                                 ValueField=@nameof(KeyValuePair<string, string>.Key)
+                                 TextField=@nameof(KeyValuePair<string, string>.Value)
+                                 Property=@ViewModel.GetProperty(() => ViewModel.Model.Location)
+                                 Filterable="true" />
+            </IPSColumn>
+        </IPSRow>
+    </FormFields>
+    <FormButtons>
+        <IPSFormSaveButton />
+    </FormButtons>
+</IPSForm>
+
+@code {
+    [Parameter] public EventCallback ItemSaved { get; set; }
+}

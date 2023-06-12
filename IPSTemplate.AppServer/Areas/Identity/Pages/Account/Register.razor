@@ -1,0 +1,59 @@
+﻿@using IPSTemplate.BusinessLibrary.StandardCollections;
+@using Telerik.Blazor.Components
+
+@page "/account/register"
+
+@if (ViewModel.Model is null)
+{
+    return;
+}
+
+@if (!confirmationVisible)
+{
+    <IPSRow>
+        <IPSColumn Md="4">
+            <IPSCard Class="p-3">
+                <h1>Registracija</h1>
+                <hr />
+                <IPSForm Model=ViewModel OnValidSubmit=RegisterUser>
+                    <FormFields>
+                        <IPSTextBox Property=@(ViewModel.GetProperty(() => ViewModel.Model.Name)) />
+                        <IPSTextBox Property=@(ViewModel.GetProperty(() => ViewModel.Model.Surname)) />
+@*                        <IPSDatePicker Label="Datum Rojstva" @bind-Value=@ViewModel.Model.BirthDate Max=DateTime.Now />
+*@                        <IPSDropDownList Data=@TECountries.OrderedUserFriendlyNameMap
+                                         ValueField=@nameof(KeyValuePair<string, string>.Key)
+                                         TextField=@nameof(KeyValuePair<string, string>.Value)
+                                         Property=@ViewModel.GetProperty(() => ViewModel.Model.Nationality)
+                                         Filterable="true" />
+
+                        <IPSTextBox Property=@(ViewModel.GetProperty(() => ViewModel.Model.Email)) />
+                        <IPSLabel For="col_password">Geslo</IPSLabel>
+                        <div class="input-group">
+                            <TelerikTextBox DebounceDelay=0 Class="form-control" Password=HidePassword @bind-Value=@ViewModel.Model.Password></TelerikTextBox>
+                            <div class="input-group-append">
+                                <IPSButton Class="ms-1" Type=ButtonType.Button Color=Color.Primary IconClass="@(HidePassword ? "fa fa-eye" : "fa fa-eye-slash")" OnClick="() => HidePassword = !HidePassword"></IPSButton>
+                            </div>
+                        </div>
+                        <IPSLabel For="col_password">Potrdi geslo</IPSLabel>
+                        <div class="input-group">
+                            <TelerikTextBox DebounceDelay=0 Class="form-control" Password=HideConfirmPassword @bind-Value=@ViewModel.Model.ConfirmPassword></TelerikTextBox>
+                            <div class="input-group-append">
+                                <IPSButton Class="ms-1" Type=ButtonType.Button Color=Color.Primary IconClass="@(HideConfirmPassword ? "fa fa-eye" : "fa fa-eye-slash")" OnClick="() => HideConfirmPassword = !HideConfirmPassword"></IPSButton>
+                            </div>
+                        </div>
+                    </FormFields>
+                    <FormButtons>
+                        <IPSButton Color=Color.Primary Type="IPSBlazor.Components.ButtonType.Submit">Registracja</IPSButton>
+                    </FormButtons>
+                </IPSForm>
+                @_actionResult?.AsAlert()
+            </IPSCard>
+        </IPSColumn>
+    </IPSRow>
+}
+else
+{
+    NavigationManager.NavigateTo("/account/sign-in");
+    NotificationService.ShowSuccess("Uporabnik je uspešno registriran!");
+}
+

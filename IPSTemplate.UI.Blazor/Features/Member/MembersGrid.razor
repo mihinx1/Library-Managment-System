@@ -1,0 +1,45 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.Member
+
+@using Core.Library.Base
+@using Csla.Core
+@using IPSTemplate.BusinessLibrary.BO.Member
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@using IPSTemplate.BusinessLibrary.StandardCollections
+@using IPSTemplate.Dal.Models
+@using Telerik.DataSource
+
+
+@inherits GridView<MembersGrid,
+                   TEMemberInfo,
+                   TEMemberGridInfo,
+                   TEMemberRL,
+                   TEMember>
+
+<IPSGrid Id="MembersGrid" ShowHeader=true
+         OnRead=ReadData TItem=TEMemberInfo @ref=_ref
+         Context="member">
+    <GridColumns>
+        <IPSGridColumn Id="Id" Field=@nameof(TEMemberInfo.Id) Visible=false />
+        <IPSGridColumn Id="FirstName" Field=@nameof(TEMemberInfo.FirstName) />
+        <IPSGridColumn Id="LastName" Field=@nameof(TEMemberInfo.LastName) />
+        <IPSGridColumn Id="BirthDate" Field=@nameof(TEMemberInfo.BirthYear) />
+        <IPSGridColumn Id="Nationality" Field=@nameof(TEMemberInfo.Nationality) />
+
+        <IPSGridColumn Id="Gender" Field=@nameof(TEMemberInfo.Gender)>
+            <Template>
+                @{
+                    var book = (TEMemberInfo)context;
+                    var color = GetColor(book.Gender);
+                    <IPSBadge Color=@color>@book.Gender</IPSBadge>
+                }
+            </Template>
+        </IPSGridColumn>
+
+        <IPSGridColumn Id="PhoneNumber" Field=@nameof(TEMemberInfo.PhoneNumber) />
+        <IPSGridColumn Id="Email" Field=@nameof(TEMemberInfo.Email) />
+        <IPSGridCommandColumn>
+            <IPSButton OnClick=@(() => EditClicked.InvokeAsync((TEMemberInfo)context)) Icon=Icon.Pencil />
+        </IPSGridCommandColumn>
+    </GridColumns>
+</IPSGrid>

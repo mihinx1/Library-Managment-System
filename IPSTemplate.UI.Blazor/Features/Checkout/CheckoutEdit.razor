@@ -1,0 +1,40 @@
+﻿@using BusinessLibrary.BO.Checkout
+@using Dal.Models
+@using System.Globalization
+@using IPSTemplate.BusinessLibrary.BO.Author;
+@using IPSTemplate.BusinessLibrary.BO.Book;
+@using IPSTemplate.BusinessLibrary.BO.BookCopy;
+@using IPSTemplate.BusinessLibrary.BO.Identity.User;
+
+@inherits EditView<TECheckoutBO, TECheckout>
+
+
+@if (ViewModel?.Model is null)
+{
+    <IPSLoader />
+    return;
+}
+
+@if (Error is not null)
+{
+    @Error
+    return;
+}
+
+<IPSForm Model=ViewModel OnSaved=@(() => ItemSaved.InvokeAsync())>
+    <FormFields>
+
+        <IPSComboBox @ref=cbxBook TItem=TEBookCopyInfo TValue=Guid
+                     Label="Kopija - Leto izida"
+                     TextField=@nameof(TEBookCopyInfo.ShowAs)
+                     ValueField=@nameof(TEBookCopyInfo.Id)
+                     Property=@ViewModel.GetProperty(() => ViewModel.Model.BookCopyID)
+                     OnRead="GetBookCopies"
+                     Placeholder="Kopija" 
+                     Filterable="true" />
+        <IPSDatePicker Label="Planirani datum vrnitve" @bind-Value=@ViewModel.Model.PlanedDate Min=DateTime.Now />
+</FormFields>
+    <FormButtons>
+        <IPSFormSaveButton />
+    </FormButtons>
+</IPSForm>

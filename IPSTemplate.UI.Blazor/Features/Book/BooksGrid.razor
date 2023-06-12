@@ -1,0 +1,100 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.Book
+
+@using Core.Library.Base
+@using Csla.Core
+@using IPSTemplate.BusinessLibrary.BO.Book
+@using IPSTemplate.BusinessLibrary.BO.BookCopy;
+@using IPSTemplate.UI.Blazor.Features.BookCopy
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@using IPSTemplate.BusinessLibrary.StandardCollections
+@using IPSTemplate.Dal.Models
+@using Telerik.DataSource
+
+
+@inherits GridView<BooksGrid,
+                   TEBookInfo,
+                   TEBookGridInfo,
+                   TEBookRL,
+                   TEBook>
+
+
+<IPSGrid Id="BooksGrid" ShowHeader=true
+         OnRead=ReadData TItem=TEBookInfo
+         Context="Book" FilterMode="GridFilterMode.FilterMenu" @ref=_ref
+         OnStateInit="@((GridStateEventArgs<TEBookInfo> args) => OnStateInitHandler(args))">
+    <GridColumns>
+        <IPSGridColumn Id="Id" Field=@nameof(TEBookInfo.Id) Visible=false />
+        <IPSGridColumn Id="Name" Field=@nameof(TEBookInfo.Title) />
+        <IPSGridColumn Id="TotalPages" Field=@nameof(TEBookInfo.TotalPages) />
+        <IPSGridColumn Id="ReleaseDate" Field=@nameof(TEBookInfo.ReleaseDate)>
+            <Template>
+                @{
+                    
+                    var book = (TEBookInfo)context;
+                    @book.ReleaseDate.Value.ToString("dd.MM.yyyy")
+                }
+            </Template>
+        </IPSGridColumn>
+
+        <IPSGridColumn Id="ColorSelect" Field=@nameof(TEBookInfo.CategoryName)>
+            <Template>
+                @{
+                    var book = (TEBookInfo)context;
+                    var color = book.CategoryColor;
+                    <IPSBadge BackgroundColor="@color">@book.CategoryName</IPSBadge>
+                }
+            </Template>
+        </IPSGridColumn>
+        <IPSGridColumn Id="CopyAmount" Title="Število Kopiji">
+            <Template>
+                @{
+                    var books = (TEBookInfo)context;
+                    var counter = books.BookCopies.Count();
+                    <IPSBadge Rounded Color="Color.Light">@counter</IPSBadge>
+                }
+            </Template>
+        </IPSGridColumn>
+
+        <IPSGridColumn Id="Author" Field=@nameof(TEBookInfo.AuthorNames) />
+
+        <AuthorizeView Roles="Administrator">
+            <IPSGridCommandColumn Context="contextBook">
+                <IPSButton OnClick=@(() => EditClicked.InvokeAsync((TEBookInfo)contextBook)) Icon=Icon.Pencil />
+                <IPSButton OnClick=@(() => AddClicked.InvokeAsync((TEBookInfo)contextBook)) Icon=Icon.Add />
+            </IPSGridCommandColumn>
+        </AuthorizeView>
+    </GridColumns>
+
+
+    <DetailTemplate>
+        <IPSGrid Data=Book.BookCopies FilterMode="GridFilterMode.None">
+            <GridColumns>
+                <IPSGridColumn Field=@nameof(TEBookCopyInfo.Id) Visible=false />
+                <IPSGridColumn Field=@nameof(TEBookCopyInfo.Status) Title="Stanje">
+                    <Template>
+                        @{
+                            var bookcopy = (TEBookCopyInfo)context;
+                            if (bookcopy.IsAvailable)
+                            {
+                                <IPSBadge Rounded Color="Color.Success">@bookcopy.Status</IPSBadge>
+                            }
+                            else
+                            {
+                                <IPSBadge Rounded Color="Color.Danger">@bookcopy.Status</IPSBadge>
+                            }
+                        }
+                    </Template>
+                </IPSGridColumn>
+                <IPSGridColumn Field=@nameof(TEBookCopyInfo.PublishedYear) Title="Leto izida"/>
+                <IPSGridColumn Field=@nameof(TEBookCopyInfo.PublisherName) Title="Založba" />
+                <AuthorizeView Roles="Administrator">
+                    <IPSGridCommandColumn Context="contextBookCopy">
+                        <IPSButton OnClick=@(() => CopyEditClicked.InvokeAsync((TEBookCopyInfo)contextBookCopy)) Icon=Icon.Pencil />
+                    </IPSGridCommandColumn>
+                </AuthorizeView>
+
+            </GridColumns>
+        </IPSGrid>
+    </DetailTemplate>
+</IPSGrid>

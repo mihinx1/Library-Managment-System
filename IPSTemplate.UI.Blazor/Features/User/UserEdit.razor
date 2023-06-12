@@ -1,0 +1,85 @@
+﻿@using BusinessLibrary.BO.Identity.User
+@using Core.DAL.Infrastructure;
+@using Dal.Models
+@using System.Globalization
+@page "/account/manage/"
+
+@inherits EditView<TEUserBO, Entity>
+
+@if (ViewModel?.Model is null)
+{
+    <IPSLoader />
+    return;
+}
+
+@if (Error is not null)
+{
+    @Error
+    return;
+}
+
+    <IPSRow>
+        <IPSColumn Md="4">
+            <IPSCard Class="p-3">
+                <h1>Uporabniški podatki</h1>
+                <hr />
+            <IPSForm Model=ViewModel OnSaved=@(() => ItemSaved.InvokeAsync())>
+                <FormFields>
+                    <IPSRow>
+                        <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.Name) />
+                        <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.Surname) />
+                        <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.PhoneNumber) />
+                        <IPSDropDownList Data=@TECountries.OrderedUserFriendlyNameMap
+                                         ValueField=@nameof(KeyValuePair<string, string>.Key)
+                                         TextField=@nameof(KeyValuePair<string, string>.Value)
+                                         Property=@ViewModel.GetProperty(() => ViewModel.Model.Nationality)
+                                         Filterable="true" />
+                    </IPSRow>
+                    <IPSRow>
+                        <IPSColumn>
+                        </IPSColumn>
+                    </IPSRow>
+                    <IPSRow>
+                    </IPSRow>
+                </FormFields>
+
+                <FormButtons>
+                    <IPSFormSaveButton />
+                </FormButtons>
+            </IPSForm>
+        </IPSCard>
+
+        <IPSCard Class="p-3">
+            <IPSCardBody>
+                <h1>Spremeni geslo</h1>
+                <hr />
+                <IPSLabel For="col_password">Novo geslo</IPSLabel>
+                <div class="input-group">
+                    <TelerikTextBox DebounceDelay=0 Class="form-control" Password=HidePassword1 @bind-Value=@Password1 AutoComplete="current-password"></TelerikTextBox>
+                    <div class="input-group-append">
+                        <IPSButton Class="ms-1" Type=IPSBlazor.Components.ButtonType.Button Color=Color.Primary IconClass="@(HidePassword1 ? "fa fa-eye" : "fa fa-eye-slash")" OnClick="() => HidePassword1 = !HidePassword1"></IPSButton>
+                    </div>
+                </div>
+                <br />
+                <IPSLabel For="col_password">Ponovi novo geslo</IPSLabel>
+                <div class="input-group">
+                    <TelerikTextBox DebounceDelay=0 Class="form-control" Password=HidePassword2 @bind-Value=@Password2 AutoComplete="current-password"></TelerikTextBox>
+                    <div class="input-group-append">
+                        <IPSButton Class="ms-1" Type=IPSBlazor.Components.ButtonType.Button Color=Color.Primary IconClass="@(HidePassword2 ? "fa fa-eye" : "fa fa-eye-slash")" OnClick="() => HidePassword2 = !HidePassword2"></IPSButton>
+                    </div>
+                </div>
+                <br />
+                    @if (Password1 is null)
+                    {
+                        <IPSButton Disabled=true Color="Color.Primary" OnClick=@SetNewPassword Icon="Icon.Save" Class="float-end mt-2">Save</IPSButton>
+                    }
+                    else
+                    {
+                    
+                        <IPSButton Color="Color.Primary" OnClick=@SetNewPassword Icon="Icon.Save" Class="float-end mt-2">Save</IPSButton>
+                    }
+            </IPSCardBody>
+        </IPSCard>
+
+    </IPSColumn>
+</IPSRow>

@@ -1,0 +1,54 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.Category
+@page "/category"
+@using IPSTemplate.BusinessLibrary.BO.Category;
+
+<IPSPageTop Title="Kategorija">
+    <ActionsContent>
+        <IPSButton Color="Color.Dark" OnClick=@(()=>OpenEditView(null))>
+            Dodaj Kategorijo
+            <IPSBadge Type="BadgeType.Bubble" Color="Color.Primary"><i class="fa-solid fa-plus" /></IPSBadge>
+            </IPSButton>
+    </ActionsContent>
+</IPSPageTop>
+
+<CategoriesGrid EditClicked=OpenEditView @ref=_grid />
+
+<IPSWindow Title=@_editViewTitle
+           Size="WindowSize.Large"
+           ConfirmCloseWhen=@(()=>_editView.ViewModel.Model.IsDirty)
+@bind-Visible=@windowVisible>
+    <WindowContent>
+        <CategoryEdit ItemId=@_selectedItemId ItemSaved=CloseEditView @ref=_editView />
+    </WindowContent>
+</IPSWindow>
+
+@code {
+    string? _selectedItemId;
+    string? _editViewTitle;
+    bool windowVisible;
+    CategoriesGrid _grid = default!;
+    CategoryEdit _editView = default!;
+    private CategoryEdit _categoryEdit = default!;
+
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    protected void OpenEditView(TECategoryInfo? selectedItem)
+    {
+        if (selectedItem is null)
+        {
+            _editViewTitle = "Dodaj novo kategorijo";
+            _selectedItemId = null;
+        }
+        else
+        {
+            _editViewTitle = $"Uredi kategorijo - {selectedItem.Name}";
+            _selectedItemId = selectedItem.Id.ToString();
+        }
+        windowVisible = true;
+    }
+    private void CloseEditView()
+    {
+        windowVisible = false;
+        _selectedItemId = null;
+        _grid.Rebind();
+    }
+}

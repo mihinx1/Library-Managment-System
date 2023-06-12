@@ -1,0 +1,46 @@
+﻿@page "/category/edit/{ItemId?}"
+
+@using BusinessLibrary.BO.Category
+@using Dal.Models
+
+@inherits EditView<TECategoryBO, TECategory>
+
+@if (ViewModel?.Model is null)
+{
+    <IPSLoader />
+    return;
+}
+
+@if (Error is not null)
+{
+    @Error
+    return;
+}
+
+<IPSForm Model=ViewModel OnSaved=@(() => ItemSaved.InvokeAsync())>
+    <FormFields>
+        <IPSRow>
+            <IPSColumn ColumnWidth="4">
+                <br />
+                <br />
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.Name) />
+            </IPSColumn>
+            <IPSColumn>
+                <IPSColorPalette @bind-Value=@ViewModel.Model.Color Colors=@ColorPalettePresets.Apex
+                                 Columns="10" TileHeight="2.5em" TileWidth="2.5em">
+                </IPSColorPalette>
+            </IPSColumn>
+        </IPSRow>
+
+
+    </FormFields>
+    <FormButtons>
+
+        <IPSFormSaveButton />
+    </FormButtons>
+</IPSForm>
+
+@code {
+    string SelectedColor { get; set; }
+    [Parameter] public EventCallback ItemSaved { get; set; }
+}

@@ -1,0 +1,62 @@
+@using IPSBlazor.Models
+@using Microsoft.Extensions.Configuration
+@using System.Globalization
+@using IPSTemplate.BusinessLibrary.StandardCollections
+
+<IPSUserMenu>
+    <IPSUserMenuTitle>
+        <IPSUserBadge DisplayName=@_displayName IconClass="fa-solid fa-circle-user" i/>
+</IPSUserMenuTitle>
+    <IPSUserMenuContent>
+        <IPSNavMenu>
+            <AuthorizeView>
+                <Authorized>
+                    <IPSNavMenuLink Link="/account/manage" IconClass="fa-solid fa-user">@Localizer["Uporabniški podatki"]</IPSNavMenuLink>
+                    <IPSNavMenuLink Link="/account/sign-out" IconClass="fa-solid fa-arrow-right-from-bracket">@Localizer["Odjava"]</IPSNavMenuLink>
+                </Authorized>
+                <NotAuthorized>
+                    <IPSNavMenuLink Link="/account/sign-in" IconClass="fa-solid fa-right-to-bracket">@Localizer["Prijava"]</IPSNavMenuLink>
+                    @*<IPSNavMenuLink Link="/account/register" IconClass="fa-solid fa-user-plus">@Localizer["NavMenu_Register"]</IPSNavMenuLink>*@
+                </NotAuthorized>
+            </AuthorizeView>
+        </IPSNavMenu>
+        <div class="app-version">@Localizer["NavMenu_Title"] @("v" + AppVersion)</div>
+    </IPSUserMenuContent>
+</IPSUserMenu>
+
+@code {
+    private AvatarType AvatarType=default!;
+    private string _displayName = default!;
+
+    [Inject] private IStringLocalizer<Resources> Localizer { get; set; } = default!;
+
+    [Inject] private IConfiguration Configuration { get; set; } = default!;
+
+    [CascadingParameter] private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    private string AppVersion => Configuration.GetSection("Application")["Version"] ?? Constants.AppVersion;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _displayName = await GetDisplayName();
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task<string> GetDisplayName()
+    {
+        if (AuthenticationStateTask is not null)
+        {
+            var authState = await AuthenticationStateTask;
+            var user = authState.User;
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                if (!string.IsNullOrEmpty(user.Identity.Name))
+                {
+                    return user.Identity.Name;
+                }
+            }
+        }
+
+        return Localizer["Niste prijavljeni"];
+    }
+}

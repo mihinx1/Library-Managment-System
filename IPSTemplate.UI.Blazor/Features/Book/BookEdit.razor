@@ -1,0 +1,66 @@
+﻿@page "/book/edit/{ItemId?}"
+
+@using BusinessLibrary.BO.Book
+@using Dal.Models
+@using IPSTemplate.BusinessLibrary.BO.Author;
+@using IPSTemplate.BusinessLibrary.BO.Category;
+@using IPSTemplate.BusinessLibrary.BO.Publisher;
+@using System.Globalization;
+
+@inherits EditView<TEBookBO, TEBook>
+
+@if (ViewModel?.Model is null)
+{
+    <IPSLoader />
+    return;
+}
+
+@if (Error is not null)
+{
+    @Error
+    return;
+}
+
+<IPSForm Model=ViewModel OnSaved=@(() => ItemSaved.InvokeAsync())>
+    <FormFields>
+        <IPSRow>
+            <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.Title) />
+        </IPSRow>
+        <IPSRow>
+            <IPSColumn>
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.TotalPages) />
+            </IPSColumn>
+            <IPSColumn>
+                <IPSDropDownList Data=@TECountries.OrderedUserFriendlyNameMap
+                    ValueField=@nameof(KeyValuePair<string, string>.Key)
+                    TextField=@nameof(KeyValuePair<string, string>.Value)
+                    Property=@ViewModel.GetProperty(() => ViewModel.Model.Language) 
+                    Filterable="true" />
+            </IPSColumn>
+        </IPSRow>
+        <IPSRow>
+            <IPSMultiSelect Property=@ViewModel.GetProperty(() => ViewModel.Model.AuthorIds) OnRead="GetAuthors"
+                TItem="TEAuthorInfo" TValue="Guid" TextField="ShowAs" ValueField="Id" Filterable="true" />
+        </IPSRow>
+        <IPSRow>
+            <IPSColumn>
+                <IPSDatePicker Label="Datum izida" @bind-Value=@ViewModel.Model.ReleaseDate Max="DateTime.Now" />
+            </IPSColumn>
+            <IPSColumn>
+                <IPSComboBox @ref=cbxCategory TItem=TECategoryInfo TValue=Guid
+                    Label="Kategorija"
+                    TextField=@nameof(TECategoryInfo.Name)
+                    ValueField=@nameof(TECategoryInfo.Id)
+                    Property=@ViewModel.GetProperty(() => ViewModel.Model.CategoryID)
+                    OnRead="GetCategories"
+                    Placeholder="Kategorija" 
+                    Filterable="true" />
+            </IPSColumn>
+        </IPSRow>
+    </FormFields>
+
+    <FormButtons>
+        <IPSFormSaveButton />
+    </FormButtons>
+</IPSForm>
+

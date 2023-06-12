@@ -1,0 +1,40 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.Category
+
+@using Core.Library.Base
+@using Csla.Core
+@using IPSTemplate.BusinessLibrary.BO.Category
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@using IPSTemplate.BusinessLibrary.StandardCollections
+@using IPSTemplate.Dal.Models
+@using Telerik.DataSource
+
+
+@inherits GridView<CategoriesGrid,
+                   TECategoryInfo,
+                   TECategoryGridInfo,
+                   TECategoryRL,
+                   TECategory>
+
+<IPSGrid Id="CategoriesGrid" ShowHeader=true
+         OnRead=ReadData TItem=TECategoryInfo
+         Context="Category" @ref=_ref
+         OnStateInit="@((GridStateEventArgs<TECategoryInfo> args) => OnStateInitHandler(args))">
+    <GridColumns>
+        <IPSGridColumn Id="Id" Field=@nameof(TECategoryInfo.Id) Visible=false />
+        <IPSGridColumn Id="CategoryName" Field=@nameof(TECategoryInfo.Name) />
+        <IPSGridColumn Id="CategoryColore" Field=@nameof(TECategoryInfo.Color) />
+
+@*        <IPSColorPalette Id="CategoryName" Field=@nameof(TECategoryInfo.CategoryColor) @bind-Value=@SelectedColor Colors=@ColorPalettePresets.Office
+                Columns="10" TileHeight="3em" TileWidth="3em">
+        </IPSColorPalette>
+*@
+        <AuthorizeView Roles="Administrator">
+            <IPSGridCommandColumn Context="contextCategories">
+                <IPSButton OnClick=@(() => EditClicked.InvokeAsync((TECategoryInfo)contextCategories)) Icon=Icon.Pencil />
+            </IPSGridCommandColumn>
+        </AuthorizeView>
+
+    </GridColumns>
+</IPSGrid>
+

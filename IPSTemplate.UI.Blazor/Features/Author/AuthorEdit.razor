@@ -1,0 +1,44 @@
+﻿@using BusinessLibrary.BO.Author
+@using Dal.Models
+@using System.Globalization
+
+@inherits EditView<TEAuthorBO, TEAuthor>
+
+
+@if (ViewModel?.Model is null)
+{
+    <IPSLoader />
+    return;
+}
+
+@if (Error is not null)
+{
+    @Error
+    return;
+}
+
+<IPSForm Model=ViewModel OnSaved=@(() => ItemSaved.InvokeAsync())>
+    <FormFields>
+        <IPSRow>
+            <IPSColumn>
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.FirstName) />
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.BirthYear) />
+            </IPSColumn>
+            <IPSColumn>
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.LastName) />
+                <IPSDropDownList Data=@TECountries.OrderedUserFriendlyNameMap
+                         ValueField=@nameof(KeyValuePair<string, string>.Key)
+                         TextField=@nameof(KeyValuePair<string, string>.Value)
+                         Property=@ViewModel.GetProperty(() => ViewModel.Model.Nationality) 
+                         Filterable=true/>
+            </IPSColumn>
+        </IPSRow>
+    </FormFields>
+    <FormButtons>
+        <IPSFormSaveButton />
+    </FormButtons>
+</IPSForm>
+
+@code{
+    [Parameter] public EventCallback ItemSaved { get; set; }
+}

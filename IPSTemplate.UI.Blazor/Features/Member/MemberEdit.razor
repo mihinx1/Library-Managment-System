@@ -1,0 +1,69 @@
+﻿@using BusinessLibrary.BO.Member
+@using Dal.Models
+@using System.Globalization
+
+@inherits EditView<TEMemberBO, TEMember>
+
+
+@if (ViewModel?.Model is null)
+{
+    <IPSLoader />
+    return;
+}
+
+@if (Error is not null)
+{
+    @Error
+    return;
+}
+
+<IPSForm Model=ViewModel OnSaved=@(() => ItemSaved.InvokeAsync())>
+    <FormFields>
+        <IPSRow>
+            <IPSColumn>
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.FirstName) />
+            </IPSColumn>
+            <IPSColumn>
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.LastName) />
+            </IPSColumn>
+        </IPSRow>
+        <IPSRow>
+            <IPSColumn>
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.BirthYear) />
+            </IPSColumn>
+            <IPSColumn>
+                <IPSDropDownList Data=@TECountries.OrderedUserFriendlyNameMap
+                                 ValueField=@nameof(KeyValuePair<string, string>.Key)
+                                 TextField=@nameof(KeyValuePair<string, string>.Value)
+                                 Property=@ViewModel.GetProperty(() => ViewModel.Model.Nationality) 
+                                 Filterable="true" />
+            </IPSColumn>
+        </IPSRow>
+        <IPSRow>
+                <IPSRadioGroup Orientation=Orientation.Horizontal
+                               Data=@TEGender.OrderedUserFriendlyNameMap
+                               ValueField=@nameof(KeyValuePair<string, string>.Key)
+                               TextField=@nameof(KeyValuePair<string, string>.Value)
+                               @bind-Value=ViewModel.Model.Gender
+                               Property=@ViewModel.GetProperty(() => ViewModel.Model.Gender) />
+        </IPSRow>
+        <IPSRow>
+            <IPSColumn>
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.PhoneNumber)/>
+            </IPSColumn>
+            <IPSColumn>
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.Email) />
+            </IPSColumn>
+        </IPSRow>
+
+
+
+    </FormFields>
+    <FormButtons>
+        <IPSFormSaveButton />
+    </FormButtons>
+</IPSForm>
+
+@code{
+    [Parameter] public EventCallback ItemSaved { get; set; }
+}

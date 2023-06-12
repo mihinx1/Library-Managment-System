@@ -1,0 +1,36 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.Publisher
+
+@using Core.Library.Base
+@using Csla.Core
+@using IPSTemplate.BusinessLibrary.BO.Publisher
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@using IPSTemplate.BusinessLibrary.StandardCollections
+@using IPSTemplate.Dal.Models
+@using Telerik.DataSource
+
+
+@inherits GridView<PublishersGrid,
+                   TEPublisherInfo,
+                   TEPublisherGridInfo,
+                   TEPublisherRL,
+                   TEPublisher>
+                   
+<IPSGrid Id="PublishersGrid" ShowHeader=true
+         OnRead=ReadData TItem=TEPublisherInfo
+         Context="Publisher" @ref=_ref
+         OnStateInit="@((GridStateEventArgs<TEPublisherInfo> args) => OnStateInitHandler(args))">
+    <GridColumns>
+        <IPSGridColumn Id="Id" Field=@nameof(TEPublisherInfo.Id) Visible=false />
+        <IPSGridColumn Id="FirstName" Field=@nameof(TEPublisherInfo.Name) />
+        <IPSGridColumn Id="Location" Field=@nameof(TEPublisherInfo.Location) />
+        <IPSGridColumn Id="BirthYear" Field=@nameof(TEPublisherInfo.Email) />
+
+        <AuthorizeView Roles="Administrator">
+                <IPSGridCommandColumn Context="contextPublisher">
+                    <IPSButton OnClick=@(() => EditClicked.InvokeAsync((TEPublisherInfo)contextPublisher)) Icon=Icon.Pencil />
+                </IPSGridCommandColumn>
+        </AuthorizeView>
+
+    </GridColumns>
+</IPSGrid>

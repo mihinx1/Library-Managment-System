@@ -1,0 +1,48 @@
+﻿@page "/bookcopy/edit/{ItemId?}"
+
+@using BusinessLibrary.BO.BookCopy
+@using Dal.Models
+@using IPSTemplate.BusinessLibrary.BO.Author;
+@using IPSTemplate.BusinessLibrary.BO.Publisher;
+
+
+@using IPSTemplate.UI.Blazor.Features.Author
+
+@inherits EditView<TEBookCopyBO, TEBookCopy>
+
+@if (ViewModel?.Model is null)
+{
+    <IPSLoader />
+    return;
+}
+
+@if (Error is not null)
+{
+    @Error
+    return;
+}
+
+
+<IPSForm Model=ViewModel OnSaved=@(() => ItemSaved.InvokeAsync())>
+    <FormFields>
+        <IPSRow>
+            <IPSColumn>
+                <IPSComboBox @ref=cbxPublisher Label="Založba"  TItem=TEPublisherInfo TValue=Guid
+                             TextField=@nameof(TEPublisherInfo.Name)
+                             ValueField=@nameof(TEPublisherInfo.Id)
+                             Property=@ViewModel.GetProperty(() => ViewModel.Model.PublisherID)
+                             OnRead="GetPublishers" />
+            </IPSColumn>
+            <IPSColumn>
+                <IPSFormField Property=@ViewModel.GetProperty(() => ViewModel.Model.PublishedYear) />
+            </IPSColumn>
+        </IPSRow>
+    </FormFields>
+    <FormButtons>
+        <IPSFormSaveButton />
+    </FormButtons>
+</IPSForm>
+
+
+
+

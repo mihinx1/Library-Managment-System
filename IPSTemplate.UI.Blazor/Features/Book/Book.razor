@@ -1,0 +1,104 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.Book
+@page "/book"
+@using IPSTemplate.BusinessLibrary.BO.Book;
+@using IPSTemplate.BusinessLibrary.BO.BookCopy;
+@using IPSTemplate.UI.Blazor.Features.Book;
+@using IPSTemplate.UI.Blazor.Features.BookCopy;
+
+<IPSPageTop Title="Knjige">
+    <ActionsContent>
+        <AuthorizeView Roles="Administrator">
+            <IPSButton Color="Color.Dark" OnClick=@(()=>OpenEditView(null))>
+                Dodaj Knjigo
+                <IPSBadge Type="BadgeType.Bubble" Color="Color.Primary"><i class="fa-solid fa-plus" /></IPSBadge>
+            </IPSButton>
+        </AuthorizeView>
+    </ActionsContent>
+</IPSPageTop>
+
+@*<BooksGrid EditClicked=OpenEditView @ref=_grid />
+*@
+<BooksGrid EditClicked=OpenEditView AddClicked=OpenAddView CopyEditClicked=OpenEditCopyView @ref=_grid />
+
+
+<IPSWindow Title=@_editViewTitle
+           Size="WindowSize.Large"
+           ConfirmCloseWhen=@(()=>_editView.ViewModel.Model.IsDirty)
+@bind-Visible=windowEditVisible>
+    <WindowContent>
+        <BookEdit ItemId=@_selectedItemId ItemSaved=CloseEditView @ref=_editView />
+    </WindowContent>
+</IPSWindow>
+
+<IPSWindow Title=@_editCopyViewTitle
+           Size="WindowSize.Medium"
+           ConfirmCloseWhen=@(() => _editCopyView.ViewModel.Model.IsDirty)
+@bind-Visible=@windowEditCopyVisible>
+    <WindowContent>
+        <BookCopyEdit BookId=@_selectedBookId ItemId=@_selectedItemId ItemSaved=CloseEditCopyView @ref=_editCopyView />
+    </WindowContent>
+</IPSWindow>
+
+
+@code {
+    string? _selectedItemId;
+    string? _editViewTitle;
+    string? _editCopyViewTitle;
+    bool windowEditVisible;
+    bool windowEditCopyVisible;
+    BooksGrid _grid = default!;
+    BookEdit _editView = default!;
+    private BookEdit _bookEdit = default!;
+    Guid _selectedBookId;
+    BookCopyEdit _editCopyView = default!;
+
+
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    protected void OpenEditView(TEBookInfo? selectedItem)
+    {
+        if (selectedItem is null)
+        {
+            _editViewTitle = "Dodaj novo knjigo";
+            _selectedItemId = null;
+        }
+        else
+        {
+            _editViewTitle = $"Uredi knjigo - {selectedItem.Title}";
+            _selectedItemId = selectedItem.Id.ToString();
+        }
+        windowEditVisible = true;
+    }
+
+    private void CloseEditView()
+    {
+        windowEditVisible = false;
+        _selectedItemId = null;
+        _grid.Refresh();
+    }
+
+    protected void OpenAddView(TEBookInfo selectedItem)
+    {
+        _editCopyViewTitle = $"Dodaj kopijo knjige - {selectedItem.Title}";
+        _selectedBookId = selectedItem.Id;
+        _selectedItemId = null;
+
+        windowEditCopyVisible = true;
+    }
+
+    protected void OpenEditCopyView(TEBookCopyInfo selectedItem)
+    {
+        _editCopyViewTitle = $"Uredi kopijo knjige - {selectedItem.BookTitle}";
+        _selectedBookId = selectedItem.BookID;
+        _selectedItemId = selectedItem.Id.ToString();
+
+        windowEditCopyVisible = true;
+    }
+
+    private void CloseEditCopyView()
+    {
+        windowEditCopyVisible = false;
+        _selectedItemId = null;
+        _grid.Rebind();
+    }
+
+}

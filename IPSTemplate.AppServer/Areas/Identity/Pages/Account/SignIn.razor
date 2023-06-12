@@ -1,0 +1,34 @@
+﻿@using System.Text.Encodings.Web
+@using Microsoft.Extensions.Localization
+@using Telerik.Blazor.Components
+
+@page "/account/sign-in"
+@layout UnauthorizedLayout
+
+<IPSRow>
+    <IPSColumn Md="4">
+        <IPSCard Class="p-3">
+            <h1>Prijava</h1>
+            <IPSForm Model=@ViewModel OnValidSubmit=SignInUser>
+                <FormFields>
+                    <IPSTextBox DebounceDelay=0 Property=@(ViewModel.GetProperty(() => ViewModel.Model.Username)) />
+                    <IPSLabel For="col_password">Password</IPSLabel>
+                    <div class="input-group">
+                        <TelerikTextBox DebounceDelay=0 Class="form-control" Password=HidePassword @bind-Value=@ViewModel.Model.Password AutoComplete="current-password"></TelerikTextBox>
+                        <div class="input-group-append">
+                            <IPSButton Class="ms-1" Type=ButtonType.Button Color=Color.Primary IconClass="@(HidePassword ? "fa fa-eye" : "fa fa-eye-slash")" OnClick="() => HidePassword = !HidePassword"></IPSButton>
+                        </div>
+                    </div>
+                    @* <IPSCheckBox Property=@(ViewModel.GetProperty(() => ViewModel.Model.RememberMe)) />*@
+                </FormFields>
+                <FormButtons>
+@*                    <IPSLink Class="me-auto" Link="/account/forgotten-password">Pozabljeno geslo?</IPSLink>
+*@                    <IPSLink Class="me-auto" Link="/account/register">Registracija</IPSLink>
+                    <IPSButton Color=Color.Primary Loading=SigningIn Disabled=SigningIn Type=ButtonType.Submit>Prijava</IPSButton>
+                </FormButtons>
+            </IPSForm>
+            @_actionResult?.AsAlert()
+        </IPSCard>
+    </IPSColumn>
+
+</IPSRow>

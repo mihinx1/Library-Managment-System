@@ -1,0 +1,83 @@
+﻿@namespace IPSTemplate.UI.Blazor.Features.Checkout
+@page "/checkout"
+@using IPSTemplate.BusinessLibrary.BO.Checkout;
+@using IPSTemplate.Dal.Models.Identity;
+@using Microsoft.AspNetCore.Identity;
+@using System.Security.Claims;
+
+<IPSPageTop Title="Izposoje">
+    <ActionsContent>
+            <IPSButton Color="Color.Dark" OnClick=@(()=>OpenEditView(null))>
+                Dodaj Izposojo
+                <IPSBadge Type="BadgeType.Bubble" Color="Color.Primary"><i class="fa-solid fa-plus" /></IPSBadge>
+            </IPSButton>
+    </ActionsContent>
+</IPSPageTop>
+
+<CheckoutsGrid BookReturned=HandleBookReturned @ref=_grid />
+
+
+<IPSWindow Title=@_editViewTitle
+Size="WindowSize.Large"
+ConfirmCloseWhen=@(()=>_editView.ViewModel.Model.IsDirty)
+@bind-Visible=windowVisible>
+<WindowContent>
+    <CheckoutEdit ItemId=@_selectedItemId ItemSaved=CloseEditView @ref=_editView/>
+</WindowContent>
+</IPSWindow>
+
+@code{
+    string? _selectedItemId;
+    string? _editViewTitle;
+    bool windowVisible;
+    CheckoutsGrid _grid = default!;
+    CheckoutEdit _editView = default!;
+    private CheckoutEdit _checkoutEdit = default!;
+    //[Inject] public AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+    //public TECheckoutInfo TEcheckoutInfo { get; set; } = default!;
+    //[Inject] public UserManager<TEIdentityUser> UserManager { get; set; } = default!;
+    [Parameter] public EventCallback ItemSaved { get; set; }
+    //private ClaimsPrincipal user = default!;
+    //public Guid UserId = default!;
+
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] IDataPortalFactory Factory { get; set; } = default!;
+    protected void OpenEditView(TECheckoutInfo? selectedItem)
+    {
+        if (selectedItem is null)
+        {
+            _editViewTitle = "Dodaj novo izposojo";
+            _selectedItemId = null;
+        }
+        else
+        {
+            _editViewTitle = $"Uredi izposojo - {selectedItem.UserShowAs}";
+            _selectedItemId = selectedItem.Id.ToString();
+        }
+        windowVisible = true;
+    }
+    private void CloseEditView()
+    {
+        windowVisible = false;
+        _selectedItemId = null;
+        _grid.Rebind();
+    }
+
+    private void HandleBookReturned(TECheckoutInfo checkout)
+    {
+        var returned = TECheckoutBO.GetItem(checkout.Id,Factory);
+        returned.OnReturn();
+        returned = returned.Save();
+        _grid.Rebind();
+    }
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    //    user = auth.User;
+    //    UserId = Guid.Parse(UserManager.GetUserId(user));
+    //    await base.OnInitializedAsync();
+    //    ViewModel.UserID = UserId;
+    //}
+
+}
